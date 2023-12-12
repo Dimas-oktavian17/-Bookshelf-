@@ -5,5 +5,7 @@
 </script>
 
 <template>
-    <IconVue icon="mdi-light:home" />
+    <!-- <IconVue icon="mdi-light:home" /> -->
+    <mainComponent />
+    <!-- <footerComponent /> -->
 </template>

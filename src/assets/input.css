@@ -5,6 +5,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 
 @layer components {
+    .doneBook {
+        @apply text-green-600
+    }
+
     .container {
         @apply max-w-5xl py-8 mx-auto;
     }

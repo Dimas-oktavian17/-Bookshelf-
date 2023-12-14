@@ -134,7 +134,7 @@ onMounted(() => {
                     <label for="notDone" class="text-white">Not Done</label>
                 </div>
             </div>
-            <ul>
+            <ul v-auto-animate>
                 <template v-for="({ judul, penulis, tahun, reading, id }) in  searchBook " :key="id">
                     <li v-if="reading" class="mb-4 flex flex-row items-center bg-white border border-main-bg text-main-bg text-sm 
                             rounded-lg focus:ring-secondary-bg dark:focus:border-secondary-bg 

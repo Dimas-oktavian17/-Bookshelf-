@@ -4,6 +4,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { Icon } from '@iconify/vue'
+import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 import mainComponent from './components/mainComponent.vue'
 import footerComponent from './components/footerComponent.vue'
 import buttonComponent from './components/button.vue'
@@ -19,5 +20,8 @@ app.component('IconVue', Icon)
     .component('inputComponent', inputComponent)
     .component('darkMode', darkMode)
 app.use(router)
+app.use(autoAnimatePlugin)
 
 app.mount('body')
+
+

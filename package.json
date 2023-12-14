@@ -12,6 +12,7 @@
     "css": "npx tailwindcss -i ./src/assets/input.css -o ./src/assets/output.css --watch"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.1",
     "vue": "^3.3.10",
     "vue-router": "^4.2.5"
   },

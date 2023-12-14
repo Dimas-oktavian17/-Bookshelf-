@@ -14,7 +14,7 @@
     }
 
     .form-input {
-        @apply bg-main-text/60 border border-main-bg text-main-bg/60 text-sm rounded-lg focus:ring-secondary-bg dark:focus:border-secondary-bg block w-full p-2.5 dark:bg-secondary-bg dark:border-secondary-bg dark:placeholder-main-text/60 dark:text-main-text/60
+        @apply bg-main-text border border-main-bg text-main-bg text-sm rounded-lg focus:ring-secondary-bg dark:focus:border-secondary-bg block w-full p-2.5 dark:bg-secondary-bg dark:border-secondary-bg dark:placeholder-main-text/60 dark:text-main-text/60
     }
 
     .cards-container {

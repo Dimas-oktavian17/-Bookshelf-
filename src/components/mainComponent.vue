@@ -1,16 +1,21 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 const title = ref('')
 const author = ref('')
 const year = ref('')
 const doneRead = ref(false)
 const searchBooks = ref('')
 const data = ref([
-    { id: '1', judul: 'abc', penulis: 'joko', tahun: 200, reading: true }
+
 ])
 const toggleDark = () => {
     document.documentElement.classList.toggle('dark')
 }
+watch(data, (newValue) => {
+    localStorage.setItem('todos', JSON.stringify(newValue))
+}, {
+    deep: true,
+})
 const saveItem = () => {
     data.value.push({
         id: data.value.length + 1,
@@ -25,10 +30,35 @@ const saveItem = () => {
     year.value = ''
 
 }
+// Selected filter
+const selectedFilter = ref('all')
 const searchBook = computed(() => {
     let result = data.value.toReversed()
-    return result.filter(book => book.judul.toLowerCase().includes(searchBooks.value.toLowerCase()))
+    result = result.filter(book => book.judul.toLowerCase().includes(searchBooks.value.toLowerCase()))
+    if (selectedFilter.value !== 'all') {
+        const isDone = selectedFilter.value === 'true'
+        result = result.filter(book => book.reading === isDone)
+    }
+
+
+    return result
 })
+const deleteBook = (id) => {
+    data.value = data.value.filter(book => book.id !== id)
+}
+const changeStatus = (id) => {
+    const book = data.value.find(book => book.id === id)
+
+    if (book) {
+        // Toggle the reading status
+        book.reading = !book.reading
+    }
+}
+
+onMounted(() => {
+    data.value = JSON.parse(localStorage.getItem('todos')) || []
+})
+
 </script>
 
 <template>
@@ -79,27 +109,77 @@ const searchBook = computed(() => {
                     <buttonComponent title="Register books!" />
                 </form>
             </div>
+
+        </section>
+        <!-- Search fiture -->
+        <section aria-label="searchWrapper" class="container flex flex-col items-center justify-center max-w-sm p-4 my-16 ">
+            <!-- all -->
+            <!-- search -->
+            <labelComponent styleLabel="block  mb-2 text-lg font-medium text-main-bg dark:text-main-text" labelFor="search"
+                title="Search your books!" />
+            <inputComponent v-model="searchBooks" typeInput="text" nameInput="search" placeholderInput="Atomic habbits"
+                styleInput="form-input mb-4" />
+            <div class="flex flex-row text-main-text">
+                <h1>Filter by:</h1>
+                <div class="mx-1">
+                    <input type="radio" id="all" value="all" v-model="selectedFilter">
+                    <label for="all" class="text-white">All</label>
+                </div>
+                <div class="mx-1">
+                    <input type="radio" id="done" value="true" v-model="selectedFilter">
+                    <label for="done" class="text-white">Done</label>
+                </div>
+                <div class="mx-1">
+                    <input type="radio" id="notDone" value="false" v-model="selectedFilter">
+                    <label for="notDone" class="text-white">Not Done</label>
+                </div>
+            </div>
             <ul>
                 <template v-for="({ judul, penulis, tahun, reading, id }) in  searchBook " :key="id">
-                    <li v-if="reading" class="text-green-700">
-                        ini sudah baca {{ judul }} - {{ penulis }} - {{ tahun }} - {{ reading }}
+                    <li v-if="reading" class="mb-4 flex flex-row items-center bg-white border border-main-bg text-main-bg text-sm 
+                            rounded-lg focus:ring-secondary-bg dark:focus:border-secondary-bg 
+                            w-full p-2.5 dark:bg-secondary-bg dark:border-secondary-bg 
+                             dark:text-main-text">
+                        <div class="text-lg">
+                            <header class="text-green-700">Sudah dibaca!</header>
+
+                            {{ judul }} - {{ penulis }} - {{ tahun }}
+                        </div>
+                        <span class="mx-2">|</span>
+                        <div class="flex flex-row items-center">
+                            <button @click="deleteBook(id)" class="transition-all group">
+                                <IconVue class="mr-1 text-base group-hover:rotate-6 group-hover:opacity-90"
+                                    icon="bi:x-circle" />
+                            </button>
+                            <button @click="changeStatus(id)" class="transition-all group">
+                                <IconVue class="text-base group-hover:rotate-6 group-hover:opacity-90" icon="bi:ban" />
+                            </button>
+
+                        </div>
                     </li>
-                    <li v-else class="text-red-400">
-                        ini belum baca {{ judul }} - {{ penulis }} - {{ tahun }} - {{ reading }}
+                    <li v-else class="mb-4 flex flex-row items-center bg-white border border-main-bg text-main-bg text-sm 
+                            rounded-lg focus:ring-secondary-bg dark:focus:border-secondary-bg 
+                            w-full p-2.5 dark:bg-secondary-bg dark:border-secondary-bg 
+                             dark:text-main-text">
+                        <div class="text-lg">
+                            <header class="text-red-700">Belum dibaca!</header>
+                            {{ judul }} - {{ penulis }} - {{ tahun }}
+                        </div>
+                        <span class="mx-2">|</span>
+                        <div class="flex flex-row items-center">
+                            <button @click="deleteBook(id)" class="transition-all group">
+                                <IconVue class="mr-1 text-base group-hover:rotate-6 group-hover:opacity-90"
+                                    icon="bi:x-circle" />
+                            </button>
+                            <button @click="changeStatus(id)" class="transition-all group">
+                                <IconVue class="text-base group-hover:rotate-6 group-hover:opacity-90"
+                                    icon="bi:check-circle" />
+                            </button>
+                        </div>
                     </li>
                 </template>
             </ul>
         </section>
-        <!-- Search fiture -->
-        <section aria-label="searchWrapper" class="flex flex-col items-center justify-center ">
 
-            <labelComponent labelFor="search" styleLabel="mb-2 text-xl font-bold text-left text-main-text"
-                title="Search your books!" />
-
-            <inputComponent v-model="searchBooks" typeInput="text" nameInput="search" placeholderInput="Atomic habbits"
-                styleInput="container max-w-sm p-4 mb-2 bg-transparent border rounded-lg dark:text-white border-white/60 shadow-m
-            dark:bg-main-bg" />
-
-        </section>
     </main>
 </template>

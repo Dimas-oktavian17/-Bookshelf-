@@ -21,7 +21,7 @@ const saveItem = () => {
         id: data.value.length + 1,
         judul: title.value,
         penulis: author.value,
-        tahun: year.value,
+        tahun: Number(year.value),
         reading: doneRead.value
     }
     )

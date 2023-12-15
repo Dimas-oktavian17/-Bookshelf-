@@ -17,14 +17,14 @@ watch(data, (newValue) => {
     deep: true,
 })
 const saveItem = () => {
-    data.value.push({
+    const newData = [...data.value, {
         id: data.value.length + 1,
         judul: title.value,
         penulis: author.value,
         tahun: Number(year.value),
         reading: doneRead.value
-    }
-    )
+    }]
+    data.value = newData
     title.value = ''
     author.value = ''
     year.value = ''

@@ -1,16 +1,14 @@
+<!-- eslint-disable indent -->
 <script setup>
 import { computed, ref, watch, onMounted } from 'vue'
 const title = ref('')
 const author = ref('')
 const year = ref('')
 const doneRead = ref(false)
-const searchBooks = ref('')
-const data = ref([
-
-])
-const toggleDark = () => {
-    document.documentElement.classList.toggle('dark')
-}
+const radiosFiltered = ref('')
+const searchFilter = ref('')
+const data = ref([])
+const toggleDark = () => document.documentElement.classList.toggle('dark')
 watch(data, (newValue) => {
     localStorage.setItem('todos', JSON.stringify(newValue))
 }, {
@@ -30,35 +28,24 @@ const saveItem = () => {
     year.value = ''
 
 }
-// Selected filter
-const selectedFilter = ref('all')
 const searchBook = computed(() => {
-    let result = data.value.toReversed()
-    result = result.filter(book => book.judul.toLowerCase().includes(searchBooks.value.toLowerCase()))
-    if (selectedFilter.value !== 'all') {
-        const isDone = selectedFilter.value === 'true'
-        result = result.filter(book => book.reading === isDone)
-    }
-
-
+    let result = data.value.toReversed().filter(book => {
+        if (radiosFiltered.value === 'true' && book.reading !== true) return false
+        if (radiosFiltered.value === 'false' && book.reading !== false) return false
+        if (searchFilter.value && !book.judul.toLowerCase().includes(searchFilter.value.toLowerCase())) return false
+        return true
+    })
     return result
 })
-const deleteBook = (id) => {
-    data.value = data.value.filter(book => book.id !== id)
-}
+const deleteBook = (id) => data.value = data.value.filter(book => book.id !== id)
 const changeStatus = (id) => {
     const book = data.value.find(book => book.id === id)
-
-    if (book) {
-        // Toggle the reading status
-        book.reading = !book.reading
-    }
+    // Toggle the reading status
+    return book.reading = !book.reading
 }
-
-onMounted(() => {
-    data.value = JSON.parse(localStorage.getItem('todos')) || []
-})
-
+onMounted(() => data.value = JSON.parse(localStorage.getItem('todos')) || [])
+const handleRadios = (filter) => radiosFiltered.value = filter
+const handleSearch = (search) => searchFilter.value = search
 </script>
 
 <template>
@@ -117,23 +104,9 @@ onMounted(() => {
             <!-- search -->
             <labelComponent styleLabel="block  mb-2 text-lg font-medium text-main-bg dark:text-main-text" labelFor="search"
                 title="Search your books!" />
-            <inputComponent v-model="searchBooks" typeInput="text" nameInput="search" placeholderInput="Atomic habbits"
-                styleInput="form-input mb-4" />
-            <div class="flex flex-row text-main-text">
-                <h1>Filter by:</h1>
-                <div class="mx-1">
-                    <input type="radio" id="all" value="all" v-model="selectedFilter">
-                    <label for="all" class="text-white">All</label>
-                </div>
-                <div class="mx-1">
-                    <input type="radio" id="done" value="true" v-model="selectedFilter">
-                    <label for="done" class="text-white">Done</label>
-                </div>
-                <div class="mx-1">
-                    <input type="radio" id="notDone" value="false" v-model="selectedFilter">
-                    <label for="notDone" class="text-white">Not Done</label>
-                </div>
-            </div>
+            <inputComponent @update:modelValue="handleSearch" typeInput="text" nameInput="search"
+                placeholderInput="Atomic habbits" styleInput="form-input mb-4" />
+            <FilterRadios @filter="handleRadios" />
             <ul v-auto-animate>
                 <template v-for="({ judul, penulis, tahun, reading, id }) in  searchBook " :key="id">
                     <li v-if="reading" class="mb-4 flex flex-row items-center bg-white border border-main-bg text-main-bg text-sm 

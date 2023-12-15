@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.1",
-    "vue": "^3.3.10",
-    "vue-router": "^4.2.5"
+    "vue": "^3.3.10"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",

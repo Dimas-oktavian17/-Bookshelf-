@@ -125,7 +125,8 @@ const handleSearch = (search) => searchFilter.value = search
                                     icon="bi:x-circle" />
                             </button>
                             <button @click="changeStatus(id)" class="transition-all group">
-                                <IconVue class="text-base group-hover:rotate-6 group-hover:opacity-90" icon="bi:ban" />
+                                <IconVue class="text-base group-hover:rotate-6 group-hover:opacity-90 delete"
+                                    icon="bi:ban" />
                             </button>
 
                         </div>

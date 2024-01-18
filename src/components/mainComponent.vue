@@ -1,51 +1,43 @@
 <!-- eslint-disable indent -->
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue'
+// pinia store
+import { storeToRefs } from 'pinia'
+import { useTodos } from '../stores/todos'
+// end pinia store
+import { ref, } from 'vue'
+// init pinia store
+const todosStore = useTodos()
+const { filterTodos, searchFilter, } = storeToRefs(todosStore)
+// end init pinia store
+// data store
 const title = ref('')
 const author = ref('')
-const year = ref('')
+const year = ref(null)
 const doneRead = ref(false)
-const radiosFiltered = ref('')
-const searchFilter = ref('')
-const data = ref([])
-const toggleDark = () => document.documentElement.classList.toggle('dark')
-watch(data, (newValue) => {
-    localStorage.setItem('todos', JSON.stringify(newValue))
-}, {
-    deep: true,
-})
-const saveItem = () => {
-    const newData = [...data.value, {
-        id: data.value.length + 1,
-        judul: title.value,
-        penulis: author.value,
-        tahun: Number(year.value),
-        reading: doneRead.value
-    }]
-    data.value = newData
+function addTodos() {
+    if (!title.value && author.value && year.value && doneRead.value) {
+        return
+    }
+    // Storing data to pinia
+    todosStore.addTodos(title.value, author.value, Number(year.value), doneRead.value)
     title.value = ''
     author.value = ''
     year.value = ''
+    doneRead.value = false
+}
 
+const toggleDark = () => document.documentElement.classList.toggle('dark')
+function deleteBook(id) {
+    todosStore.deleteBook(id)
 }
-const searchBook = computed(() => {
-    let result = data.value.toReversed().filter(book => {
-        if (radiosFiltered.value === 'true' && book.reading !== true) return false
-        if (radiosFiltered.value === 'false' && book.reading !== false) return false
-        if (searchFilter.value && !book.judul.toLowerCase().includes(searchFilter.value.toLowerCase())) return false
-        return true
-    })
-    return result
-})
-const deleteBook = (id) => data.value = data.value.filter(book => book.id !== id)
-const changeStatus = (id) => {
-    const book = data.value.find(book => book.id === id)
-    // Toggle the reading status
-    return book.reading = !book.reading
+function changeStatus(id) {
+    todosStore.changeStatus(id)
 }
-onMounted(() => data.value = JSON.parse(localStorage.getItem('todos')) || [])
-const handleRadios = (filter) => radiosFiltered.value = filter
-const handleSearch = (search) => searchFilter.value = search
+// onMounted(()data.value => JSON.parse(localStorage.getItem('todosPinia')) || [])
+// eslint-disable-next-line no-unused-vars
+function handleSearch() {
+    todosStore.handleSearch(searchFilter.value)
+}
 </script>
 
 <template>
@@ -55,7 +47,7 @@ const handleSearch = (search) => searchFilter.value = search
                 class="container max-w-sm p-4 my-16 bg-white border rounded-lg border-white/60 shadow-m sm:p-6 lg:p-8 dark:bg-main-bg dark:border-secondary-bg">
                 <!-- Darkmode -->
                 <darkMode @darkmode="toggleDark" title="darkmode" />
-                <form @submit.prevent="saveItem" class="space-y-6 ">
+                <form @submit.prevent="addTodos" class="space-y-6 ">
                     <h5 class="text-xl font-bold text-gray-900 dark:text-main-text">
                         Bookshelf
                     </h5>
@@ -104,11 +96,11 @@ const handleSearch = (search) => searchFilter.value = search
             <!-- search -->
             <labelComponent styleLabel="block  mb-2 text-lg font-medium text-main-bg dark:text-main-text" labelFor="search"
                 title="Search your books!" />
-            <inputComponent @update:modelValue="handleSearch" typeInput="text" nameInput="search"
-                placeholderInput="Atomic habbits" styleInput="form-input mb-4" />
-            <FilterRadios @filter="handleRadios" />
+            <inputComponent v-model="searchFilter" typeInput="text" nameInput="search" placeholderInput="Atomic habbits"
+                styleInput="form-input mb-4" />
+            <FilterRadios />
             <ul v-auto-animate>
-                <template v-for="({ judul, penulis, tahun, reading, id }) in  searchBook " :key="id">
+                <template v-for="({ judul, penulis, tahun, reading, id }) in  filterTodos" :key="id">
                     <li v-if="reading" class="mb-4 flex flex-row items-center bg-white border border-main-bg text-main-bg text-sm 
                             rounded-lg focus:ring-secondary-bg dark:focus:border-secondary-bg 
                             w-full p-2.5 dark:bg-secondary-bg dark:border-secondary-bg 

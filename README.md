@@ -38,7 +38,7 @@ npm run lint
 
 ## Bookshelf Web Application Documentation
 ### Overview
-The Bookshelf web application is a modern and user-friendly platform designed to manage a collection of books. Users can add, view, and organize their books seamlessly. The application is built with performance in mind and incorporates Tailwind CSS for styling, FormKit for form handling, Auto-Animate for smooth transitions, and Iconify Vue for easy integration of icons.
+The Bookshelf web application is a modern and user-friendly platform designed to manage a collection of books. Users can add, view, and organize their books seamlessly. The application is built with performance in mind and incorporates Tailwind CSS for styling, pinia-plugin-persistedstate for Configurable persistence and rehydration of Pinia stores, Pinia for state managgement , FormKit for form handling, Auto-Animate for smooth transitions, and Iconify Vue for easy integration of icons.
 
 ### Features
 #### 1) Book Management
